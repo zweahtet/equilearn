@@ -227,6 +227,7 @@ export default function Home() {
 				{view === "exercises" && (
 					<ExerciseGenerator
 						exercises={exercises}
+						level={learnerLevel}
 						onBack={() => setView("content")}
 						onRestart={handleRestart}
 					/>
