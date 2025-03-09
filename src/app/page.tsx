@@ -89,6 +89,15 @@ export default function Home() {
 		}
 	};
 
+	const handleRestart = () => {
+		// Reset all state variables
+		setView("upload");
+		setContent("");
+		setOriginalContent("");
+		setLearnerLevel("");
+		setExercises("");
+	};
+
 	return (
 		<main className="min-h-screen bg-slate-50 py-12">
 			<div className="container px-4 mx-auto">
@@ -219,6 +228,7 @@ export default function Home() {
 					<ExerciseGenerator
 						exercises={exercises}
 						onBack={() => setView("content")}
+						onRestart={handleRestart}
 					/>
 				)}
 

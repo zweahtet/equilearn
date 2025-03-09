@@ -1,6 +1,7 @@
 // src/components/ExerciseGenerator.tsx
 "use client";
 
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -10,16 +11,20 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { DownloadIcon, RotateCcwIcon, ArrowLeftIcon } from "lucide-react";
 
 interface ExerciseGeneratorProps {
 	exercises: string;
 	onBack: () => void;
+	onRestart: () => void;
 }
 
 export function ExerciseGenerator({
 	exercises,
 	onBack,
+	onRestart,
 }: ExerciseGeneratorProps) {
+	const contentRef = useRef<HTMLDivElement>(null);
 	return (
 		<Card className="w-full max-w-4xl mx-auto">
 			<CardHeader>
@@ -32,6 +37,7 @@ export function ExerciseGenerator({
 			<CardContent>
 				<div className="bg-white rounded-md border p-6 shadow-sm">
 					<div
+						ref={contentRef}
 						className="prose max-w-none"
 						dangerouslySetInnerHTML={{ __html: exercises }}
 					/>
@@ -39,10 +45,12 @@ export function ExerciseGenerator({
 			</CardContent>
 
 			<CardFooter className="flex justify-between">
-				<Button variant="outline" onClick={onBack}>
-					Back to Content
+				<Button variant="outline" onClick={onBack} size="sm">
+					<ArrowLeftIcon className="h-4 w-4 mr-2" /> Back to Content
 				</Button>
-				<Button>Download Exercises</Button>
+				<Button variant="outline" onClick={onRestart} size="sm">
+					<RotateCcwIcon className="h-4 w-4 mr-2" /> Start Over
+				</Button>
 			</CardFooter>
 		</Card>
 	);
