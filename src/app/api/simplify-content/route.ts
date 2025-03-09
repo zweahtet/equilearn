@@ -16,11 +16,11 @@ export async function POST(request: Request) {
                 {
                     role: "system",
                     content: `You are an educational content adapter for ESL students at ${level} CEFR level. 
-          Simplify the text while preserving all key information. 
-          Use vocabulary and sentence structures appropriate for the target level. 
-          Format your response with HTML: Important terms should be wrapped in <strong> tags.
-          Difficult concepts should include simple explanations in parentheses.
-          Use <p> tags for paragraphs.`
+                    Simplify the text while preserving all key information. 
+                    Use vocabulary and sentence structures appropriate for the target level. 
+                    Format your response with HTML: Important terms should be wrapped in <strong> tags.
+                    Difficult concepts should include simple explanations in parentheses.
+                    <p> tags for paragraphs.`
                 },
                 { role: "user", content }
             ]
