@@ -124,3 +124,96 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Exercise styling */
+.exercise-set {
+  @apply space-y-8;
+}
+
+.exercise-set-title {
+  @apply text-2xl font-bold text-center mb-6 text-blue-700;
+}
+
+.exercise {
+  @apply bg-white border rounded-lg shadow-sm p-6 mb-8;
+}
+
+.exercise-title {
+  @apply text-xl font-bold text-blue-600 mb-3 pb-2 border-b;
+}
+
+.exercise-instructions {
+  @apply text-slate-600 italic mb-4;
+}
+
+/* Vocabulary exercise styling */
+.vocabulary-exercise {
+  @apply grid md:grid-cols-2 gap-6 mb-4;
+}
+
+.word-list, .definition-list {
+  @apply space-y-3;
+}
+
+.word-item, .definition-item {
+  @apply p-3 bg-slate-50 rounded border border-slate-200;
+}
+
+.word-item {
+  @apply border-l-4 border-l-blue-500;
+}
+
+.definition-item {
+  @apply border-l-4 border-l-green-500;
+}
+
+.follow-up {
+  @apply mt-4 bg-blue-50 p-3 rounded-md text-blue-700;
+}
+
+/* Comprehension questions styling */
+.comprehension-questions {
+  @apply space-y-5;
+}
+
+.question {
+  @apply mb-4;
+}
+
+.question-text {
+  @apply font-medium mb-2;
+}
+
+.answer-options {
+  @apply ml-4 space-y-1;
+}
+
+.option {
+  @apply p-2 hover:bg-slate-100 rounded transition-colors cursor-pointer;
+}
+
+/* Writing prompt styling */
+.writing-prompt {
+  @apply bg-slate-50 p-4 rounded-md border border-slate-200;
+}
+
+.prompt-text {
+  @apply font-medium text-slate-800 mb-3;
+}
+
+.writing-guidelines {
+  @apply mt-4 text-sm text-slate-600;
+}
+
+.writing-guidelines ul {
+  @apply list-disc ml-5 mt-2 space-y-1;
+}
+
+/* Discussion questions styling */
+.discussion-questions {
+  @apply space-y-3;
+}
+
+.discussion-questions .question-text {
+  @apply p-3 bg-blue-50 rounded-md border-l-4 border-l-blue-500;
+}
