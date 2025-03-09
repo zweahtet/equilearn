@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { Groq } from 'groq-sdk';
 import { QdrantClient } from '@qdrant/js-client-rest';
+import { pipeline } from '@huggingface/transformers';
+import { v4 as uuidv4 } from 'uuid';
 
 // Initialize clients
 const groqClient = new Groq({
@@ -11,6 +13,8 @@ const qdrantClient = new QdrantClient({
     url: process.env.QDRANT_URL,
     apiKey: process.env.QDRANT_API_KEY
 });
+
+const embeddingModel = await pipeline('embeddings', 'sentence-transformers/all-mpnet-base-v2')
 
 // Helper function to split content into chunks
 function splitContentIntoChunks(content: string, maxChunkSize = 500) {
@@ -73,7 +77,8 @@ async function ensureCollectionExists() {
         if (!collections.collections.find(c => c.name === 'educational_content')) {
             await qdrantClient.createCollection('educational_content', {
                 vectors: {
-                    size: 1536,
+                    // size: 1536,
+                    size: 768,
                     distance: 'Cosine'
                 }
             });
@@ -98,13 +103,17 @@ export async function POST(request: Request) {
         for (const chunk of chunks) {
             // For hackathon purposes, we'll use a mock embedding
             // In a real implementation, use proper embedding API
-            const mockEmbedding = Array(1536).fill(0).map(() => Math.random());
+            // const mockEmbedding = Array(1536).fill(0).map(() => Math.random());
+            const chunkEmbedding = await embeddingModel(chunk, {
+                pooling: 'mean',
+                normalize: true
+            })
 
             // Store in Qdrant
             await qdrantClient.upsert('educational_content', {
                 points: [{
-                    id: Date.now().toString() + Math.floor(Math.random() * 1000),
-                    vector: mockEmbedding,
+                    id: uuidv4(),
+                    vector: Array.from(chunkEmbedding.data),
                     payload: {
                         content: chunk,
                         title,
@@ -123,6 +132,9 @@ export async function POST(request: Request) {
         });
     } catch (error: any) {
         console.error("Error processing content:", error);
+        if (error.data) {
+            console.error("Qdrant error details:", error.data);
+        }
         return NextResponse.json({
             success: false,
             error: error.message
