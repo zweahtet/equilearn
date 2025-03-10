@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UploadIcon, FileTextIcon, BookIcon } from "lucide-react";
 
 interface ContentUploaderProps {
 	onUpload: (content: string) => void;
@@ -26,6 +27,7 @@ export function ContentUploader({ onUpload }: ContentUploaderProps) {
 	const [source, setSource] = useState("");
 	const [error, setError] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [activeTab, setActiveTab] = useState("text");
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -69,6 +71,32 @@ export function ContentUploader({ onUpload }: ContentUploaderProps) {
 
 	const loadSampleContent = () => {
 		setContent(samplePhotosynthesisText);
+		setTitle("Introduction to Photosynthesis");
+		setSource("Biology Textbook");
+	};
+
+	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		// Check file type
+		if (file.type !== "text/plain" && !file.name.endsWith(".txt")) {
+			setError("Please upload a text (.txt) file");
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = (event) => {
+			const result = event.target?.result;
+			if (typeof result === "string") {
+				setContent(result);
+				setTitle(file.name.replace(/\.[^/.]+$/, "")); // Remove file extension for title
+			}
+		};
+		reader.onerror = () => {
+			setError("Error reading file");
+		};
+		reader.readAsText(file);
 	};
 
 	return (
@@ -87,65 +115,131 @@ export function ContentUploader({ onUpload }: ContentUploaderProps) {
 					</Alert>
 				)}
 
-				<form onSubmit={handleSubmit}>
-					<div className="grid gap-4">
-						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-2">
-								<label
-									htmlFor="title"
-									className="text-sm font-medium"
-								>
-									Title (optional)
-								</label>
-								<Input
-									id="title"
-									value={title}
-									onChange={(e) => setTitle(e.target.value)}
-									placeholder="Article title"
-								/>
+				<Tabs
+					defaultValue="text"
+					onValueChange={setActiveTab}
+					className="mb-6"
+				>
+					<TabsList className="grid w-full grid-cols-2">
+						<TabsTrigger value="text">
+							<FileTextIcon className="h-4 w-4 mr-2" />
+							Enter Text
+						</TabsTrigger>
+						<TabsTrigger value="file">
+							<UploadIcon className="h-4 w-4 mr-2" />
+							Upload File
+						</TabsTrigger>
+					</TabsList>
+
+					<TabsContent value="text">
+						<div className="grid gap-4">
+							<div className="grid grid-cols-2 gap-4">
+								<div className="space-y-2">
+									<label
+										htmlFor="title"
+										className="text-sm font-medium"
+									>
+										Title (optional)
+									</label>
+									<Input
+										id="title"
+										value={title}
+										onChange={(e) =>
+											setTitle(e.target.value)
+										}
+										placeholder="Article title"
+									/>
+								</div>
+
+								<div className="space-y-2">
+									<label
+										htmlFor="source"
+										className="text-sm font-medium"
+									>
+										Source (optional)
+									</label>
+									<Input
+										id="source"
+										value={source}
+										onChange={(e) =>
+											setSource(e.target.value)
+										}
+										placeholder="Where this content is from"
+									/>
+								</div>
 							</div>
 
 							<div className="space-y-2">
 								<label
-									htmlFor="source"
+									htmlFor="content"
 									className="text-sm font-medium"
 								>
-									Source (optional)
+									Content
 								</label>
-								<Input
-									id="source"
-									value={source}
-									onChange={(e) => setSource(e.target.value)}
-									placeholder="Where this content is from"
+								<Textarea
+									id="content"
+									value={content}
+									onChange={(e) => setContent(e.target.value)}
+									placeholder="Paste your educational content here..."
+									className="min-h-[300px]"
 								/>
 							</div>
 						</div>
+					</TabsContent>
 
-						<div className="space-y-2">
-							<label
-								htmlFor="content"
-								className="text-sm font-medium"
-							>
-								Content
-							</label>
-							<Textarea
-								id="content"
-								value={content}
-								onChange={(e) => setContent(e.target.value)}
-								placeholder="Paste your educational content here..."
-								className="min-h-[300px]"
-							/>
+					<TabsContent value="file">
+						<div className="space-y-4">
+							<div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+								<label
+									htmlFor="file-upload"
+									className="cursor-pointer"
+								>
+									<UploadIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+									<p className="text-sm text-gray-600 mb-1">
+										Click to upload or drag and drop
+									</p>
+									<p className="text-xs text-gray-500 mb-4">
+										TXT files only (max 1MB)
+									</p>
+									<Button variant="outline" size="sm">
+										Select File
+									</Button>
+									<input
+										id="file-upload"
+										type="file"
+										accept=".txt,text/plain"
+										className="hidden"
+										onChange={handleFileUpload}
+									/>
+								</label>
+							</div>
+
+							{content && activeTab === "file" && (
+								<div className="space-y-2">
+									<p className="text-sm font-medium">
+										Preview:
+									</p>
+									<div className="border rounded-md p-3 max-h-[200px] overflow-y-auto text-sm">
+										{content.slice(0, 500)}
+										{content.length > 500 && "..."}
+									</div>
+								</div>
+							)}
 						</div>
-					</div>
-				</form>
+					</TabsContent>
+				</Tabs>
 			</CardContent>
 
 			<CardFooter className="flex justify-between">
 				<Button variant="outline" onClick={loadSampleContent}>
+					<BookIcon className="h-4 w-4 mr-2" />
 					Load Sample Content
 				</Button>
 
-				<Button onClick={handleSubmit} disabled={isLoading}>
+				<Button
+					onClick={handleSubmit}
+					disabled={isLoading || !content.trim()}
+				>
 					{isLoading ? "Processing..." : "Process Content"}
 				</Button>
 			</CardFooter>
